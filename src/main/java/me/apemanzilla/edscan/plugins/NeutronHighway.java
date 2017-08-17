@@ -1,4 +1,4 @@
-package me.apemanzilla.edscan.impl;
+package me.apemanzilla.edscan.plugins;
 
 import java.io.IOException;
 import java.net.URI;
@@ -37,7 +37,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import me.apemanzilla.edjournal.events.FSDJump;
 import me.apemanzilla.edscan.Plugin;
-import me.apemanzilla.edscan.impl.NeutronHighway.Route.Jump;
+import me.apemanzilla.edscan.plugins.NeutronHighway.Route.Jump;
 
 @Slf4j
 @AutoService(Plugin.class)

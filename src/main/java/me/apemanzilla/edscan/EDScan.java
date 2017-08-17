@@ -21,15 +21,22 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.property.Property;
 import javafx.beans.value.ObservableValue;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TitledPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import me.apemanzilla.edjournal.Journal;
 import me.apemanzilla.edjournal.events.JournalEvent;
@@ -49,12 +56,38 @@ public class EDScan extends Application {
 	@Getter
 	private Journal journal;
 
+	@Getter(AccessLevel.PACKAGE)
 	private PluginManager pluginManager;
 
 	private Multimap<Class<?>, Consumer<? extends JournalEvent>> listeners = MultimapBuilder.hashKeys().hashSetValues()
 			.build();
 
-	private VBox viewPane;
+	public class EDScanController extends BorderPane {
+		@SneakyThrows(IOException.class)
+		private EDScanController() {
+			FXMLLoader loader = new FXMLLoader(EDScan.class.getResource("EDScan.fxml"));
+
+			loader.setController(this);
+			loader.setRoot(this);
+
+			loader.load();
+		}
+
+		@FXML
+		private VBox viewPane;
+
+		@FXML
+		private void quit() {
+			Platform.exit();
+		}
+
+		@FXML
+		private void pluginMgr() {
+
+		}
+	}
+
+	private EDScanController controller;
 
 	private Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
@@ -192,6 +225,10 @@ public class EDScan extends Application {
 		}
 	}
 
+	public Path getPluginDirectory() {
+		return getDataDirectory().resolve("plugins");
+	}
+
 	public Path getConfigFile() {
 		return getDataDirectory().resolve("config.json");
 	}
@@ -244,7 +281,7 @@ public class EDScan extends Application {
 
 	public void addView(String name, Node content) {
 		TitledPane pane = new TitledPane(name, content);
-		viewPane.getChildren().add(pane);
+		controller.viewPane.getChildren().add(pane);
 	}
 
 	@Override
@@ -271,9 +308,8 @@ public class EDScan extends Application {
 		eventListener.start();
 
 		log.info("Loading plugins");
-		Path pluginDir = getDataDirectory().resolve("plugins");
-		Files.createDirectories(pluginDir);
-		URLClassLoader classLoader = new URLClassLoader(new URL[] { pluginDir.toUri().toURL() });
+		Files.createDirectories(getPluginDirectory());
+		URLClassLoader classLoader = new URLClassLoader(new URL[] { getPluginDirectory().toUri().toURL() });
 		pluginManager = PluginManager.loadPlugins(this, ServiceLoader.load(Plugin.class, classLoader));
 
 		log.info("Initialization complete");
@@ -281,17 +317,14 @@ public class EDScan extends Application {
 
 	@Override
 	public void start(Stage primaryStage) throws IOException {
-		ScrollPane scroll = new ScrollPane(viewPane = new VBox());
-		scroll.setFitToWidth(true);
-
-		Scene scene = new Scene(new BorderPane(scroll));
+		controller = new EDScanController();
 
 		pluginManager.init();
 
-		primaryStage.setScene(scene);
-		primaryStage.setTitle("EDScan");
+		primaryStage.setScene(new Scene(controller));
 		primaryStage.setMinHeight(300);
 		primaryStage.setMinWidth(400);
+		primaryStage.setTitle("EDScan" + getVersion().map(v -> " " + v).orElse(""));
 		primaryStage.show();
 	}
 

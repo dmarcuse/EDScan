@@ -1,4 +1,4 @@
-package me.apemanzilla.edscan.impl;
+package me.apemanzilla.edscan.plugins;
 
 import static java.lang.Math.pow;
 

@@ -1,4 +1,4 @@
-package me.apemanzilla.edscan.impl;
+package me.apemanzilla.edscan.plugins;
 
 import java.io.IOException;
 import java.net.URI;
