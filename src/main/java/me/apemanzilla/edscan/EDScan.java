@@ -27,7 +27,6 @@ import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import lombok.Getter;
 import lombok.NonNull;
@@ -39,16 +38,6 @@ import me.apemanzilla.edjournal.events.JournalEvent;
 public class EDScan extends Application {
 	public static Optional<String> getVersion() {
 		return Optional.ofNullable(EDScan.class.getPackage().getImplementationVersion());
-	}
-
-	private static Font loadFont(String name) {
-		return Font.loadFont(EDScan.class.getResourceAsStream("fonts/" + name), 12);
-	}
-
-	private static void loadFonts() {
-		loadFont("eurocaps.ttf");
-		loadFont("sintony.ttf");
-		loadFont("telegrama.ttf");
 	}
 
 	public static void main(String[] args) {
@@ -211,7 +200,7 @@ public class EDScan extends Application {
 		log.info("Writing config");
 		Files.write(getConfigFile(), gson.toJson(config.getMap()).getBytes());
 	}
-	
+
 	public <T extends JournalEvent> void addEventListener(Class<T> cls, Consumer<T> consumer) {
 		listeners.put(cls, consumer);
 	}
@@ -272,9 +261,6 @@ public class EDScan extends Application {
 			config = new Config();
 		}
 
-		log.info("Loading fonts");
-		loadFonts();
-
 		log.info("Initializing journal");
 		journal = Journal.create();
 
@@ -313,7 +299,7 @@ public class EDScan extends Application {
 	public void stop() throws IOException {
 		log.info("Cleaning up plugins");
 		pluginManager.cleanup();
-		
+
 		saveConfig();
 	}
 }
