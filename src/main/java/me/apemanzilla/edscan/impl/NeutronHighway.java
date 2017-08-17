@@ -10,6 +10,7 @@ import org.controlsfx.control.textfield.AutoCompletionBinding.ISuggestionRequest
 import org.controlsfx.control.textfield.TextFields;
 
 import com.google.auto.service.AutoService;
+import com.google.common.primitives.Ints;
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 import com.mashape.unirest.http.HttpResponse;
@@ -51,23 +52,24 @@ public class NeutronHighway extends Plugin {
 		return "Neutron Highway";
 	}
 
+	@Override
+	public String getDescription() {
+		return "An interactive client for Spansh's neutron plotter that tracks progress and copies system names automatically";
+	}
+
 	private BorderPane viewWrapper;
 
 	private void switchToForm() {
-		Platform.runLater(() -> {
-			log.info("Switching to form");
-			edscan.getConfig().remove("neutronHighway.route");
-			viewWrapper.setCenter(new FormController());
-		});
+		log.info("Switching to form");
+		edscan.getConfig().remove("neutronHighway.route");
+		viewWrapper.setCenter(new FormController());
 	}
 
 	private void switchToRoute(Route route) {
-		Platform.runLater(() -> {
-			log.info("Switching to route");
-			edscan.getConfig().put("neutronHighway.route", route);
-			viewWrapper.setCenter(new RouteController(route));
-			route.addListener(r -> edscan.getConfig().put("neutronHighway.route", route));
-		});
+		log.info("Switching to route");
+		edscan.getConfig().put("neutronHighway.route", route);
+		viewWrapper.setCenter(new RouteController(route));
+		route.addListener(r -> edscan.getConfig().put("neutronHighway.route", route));
 	}
 
 	@Override
@@ -210,7 +212,7 @@ public class NeutronHighway extends Plugin {
 					Route route = gson.fromJson(o.get("result"), Route.class);
 					log.info("Route acquired!");
 
-					switchToRoute(route);
+					Platform.runLater(() -> switchToRoute(route));
 				} catch (IllegalStateException | InterruptedException | JsonParseException | UnirestException e) {
 					log.error("Error plotting route params {}:", params, e);
 
@@ -260,9 +262,17 @@ public class NeutronHighway extends Plugin {
 			return getJump(progress + 1);
 		}
 
-		public void incrementProgress() {
-			progress++;
+		public void changeProgress(int amt) {
+			progress = Ints.constrainToRange(progress + amt, 0, getSystemJumps().size() - 1);
 			listeners.forEach(l -> l.invalidated(this));
+		}
+
+		public void incrementProgress() {
+			changeProgress(1);
+		}
+
+		public void decrementProgress() {
+			changeProgress(-1);
 		}
 
 		public int totalJumps() {
@@ -275,7 +285,6 @@ public class NeutronHighway extends Plugin {
 
 		@Override
 		public void addListener(InvalidationListener listener) {
-			System.out.println(listeners);
 			listeners.add(listener);
 		}
 
@@ -290,7 +299,7 @@ public class NeutronHighway extends Plugin {
 		private final Route route;
 
 		@FXML
-		private Button clearBtn, copyBtn;
+		private Button clearBtn, copyBtn, skipBtn, prevBtn;
 
 		@FXML
 		private Label nextLabel, destLabel, progressLabel;
@@ -316,13 +325,10 @@ public class NeutronHighway extends Plugin {
 		@Override
 		public void initialize(URL location, ResourceBundle resources) {
 			edscan.addEventListener(FSDJump.class, this);
-			nextLabel.setText(route.getNextJump().map(Jump::getSystem).orElse("Done!"));
 			destLabel.setText(route.getDestinationSystem());
-			updateProgress();
-
 			edscan.getConfig().bindAndSet("neutronHighway.autoCopy", autoCopy.selectedProperty(), false);
 
-			if (autoCopy.isSelected()) copyNextSystem();
+			updateProgress();
 		}
 
 		@FXML
@@ -350,9 +356,25 @@ public class NeutronHighway extends Plugin {
 		}
 
 		private void updateProgress() {
+			nextLabel.setText(route.getNextJump().map(Jump::getSystem).orElse("Done!"));
+
 			progress.setProgress(route.getProgress() / (route.getSystemJumps().size() - 1.0));
 			progressLabel.setText(String.format("%d / %d jumps (%.1f ly remaining)", route.completedJumps(),
 					route.totalJumps(), route.getCurrentJump().map(Jump::getDistanceLeft).get()));
+
+			if (autoCopy.isSelected()) copyNextSystem();
+		}
+
+		@FXML
+		private void skipJump() {
+			route.incrementProgress();
+			updateProgress();
+		}
+
+		@FXML
+		private void previousJump() {
+			route.changeProgress(-1);
+			updateProgress();
 		}
 
 		@Override
@@ -361,13 +383,7 @@ public class NeutronHighway extends Plugin {
 				if (s.equalsIgnoreCase(jump.getStarSystem())) {
 					route.incrementProgress();
 
-					Platform.runLater(() -> {
-						copyBtn.setText("Copy");
-						nextLabel.setText(route.getNextJump().map(Jump::getSystem).orElse("Done!"));
-						updateProgress();
-
-						if (autoCopy.isSelected()) copyNextSystem();
-					});
+					Platform.runLater(this::updateProgress);
 				}
 			});
 		}

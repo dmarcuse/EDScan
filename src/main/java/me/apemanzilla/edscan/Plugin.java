@@ -12,6 +12,11 @@ public abstract class Plugin {
 	public abstract String getName();
 
 	/**
+	 * @return The human-readable description of this plugin
+	 */
+	public abstract String getDescription();
+
+	/**
 	 * @return A human-readable version string for this plugin, or an empty optional
 	 *         (default)
 	 */

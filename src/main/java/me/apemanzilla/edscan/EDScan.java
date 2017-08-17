@@ -143,9 +143,26 @@ public class EDScan extends Application {
 		 * Binds the given key in this config to the given value unidirectionally, such
 		 * that when the value changes, the config is updated to match.
 		 * 
+		 * @see #bindAndSet(String, Property)
 		 * @see #bindAndSet(String, Property, Object)
 		 */
 		public <T> void bind(String key, ObservableValue<T> binding) {
+			binding.addListener((s, o, n) -> put(key, n));
+		}
+
+		/**
+		 * Sets the given property to the existing value in this config if present, then
+		 * binds it such that when the property changes, the config is updated to
+		 * match.<br>
+		 * 
+		 * @see #bind(String, ObservableValue)
+		 * @see #bindAndSet(String, Property, Object)
+		 */
+		@SuppressWarnings("unchecked")
+		public <T> void bindAndSet(String key, Property<T> binding) {
+			assert binding.getValue() != null : "Cannot determine binding type parameter";
+
+			getAs((Class<T>) binding.getValue().getClass(), key).ifPresent(binding::setValue);
 			binding.addListener((s, o, n) -> put(key, n));
 		}
 
@@ -158,6 +175,7 @@ public class EDScan extends Application {
 		 * new value is equal to the default value.
 		 * 
 		 * @see #bind(String, ObservableValue)
+		 * @see #bindAndSet(String, Property)
 		 */
 		@SuppressWarnings("unchecked")
 		public <T> void bindAndSet(String key, Property<T> binding, @NonNull T defaultValue) {
@@ -189,6 +207,11 @@ public class EDScan extends Application {
 		return getDataDirectory().resolve("config.json");
 	}
 
+	public void saveConfig() throws IOException {
+		log.info("Writing config");
+		Files.write(getConfigFile(), gson.toJson(config.getMap()).getBytes());
+	}
+	
 	public <T extends JournalEvent> void addEventListener(Class<T> cls, Consumer<T> consumer) {
 		listeners.put(cls, consumer);
 	}
@@ -240,8 +263,6 @@ public class EDScan extends Application {
 		log.info("Loading config");
 		if (Files.exists(getConfigFile())) {
 			try (Reader r = Files.newBufferedReader(getConfigFile())) {
-/*				config = new Config(
-						gson.<Map<String, Object>>fromJson(r, new TypeToken<Map<String, Object>>() {}.getType()));*/
 				config = new Config(gson.fromJson(r, new TypeToken<Map<String, JsonElement>>() {}.getType()));
 			} catch (JsonIOException | JsonSyntaxException | IOException e) {
 				log.error("Error loading config from {}", getConfigFile(), e);
@@ -292,8 +313,7 @@ public class EDScan extends Application {
 	public void stop() throws IOException {
 		log.info("Cleaning up plugins");
 		pluginManager.cleanup();
-
-		log.info("Writing config");
-		Files.write(getConfigFile(), gson.toJson(config.getMap()).getBytes());
+		
+		saveConfig();
 	}
 }

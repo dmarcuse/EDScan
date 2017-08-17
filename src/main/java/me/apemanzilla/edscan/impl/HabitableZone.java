@@ -19,6 +19,11 @@ public class HabitableZone extends Plugin implements Consumer<StarScan> {
 		return "Habitable Zone Finder";
 	}
 
+	@Override
+	public String getDescription() {
+		return "Provides an estimation of the habitable range of any scanned stars";
+	}
+
 	Label starName = new Label();
 	Label starHabZone = new Label();
 
