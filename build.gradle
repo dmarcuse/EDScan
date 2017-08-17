@@ -1,22 +1,11 @@
-buildscript {
-	dependencies {
-		classpath group: 'de.dynamicfiles.projects.gradle.plugins', name: 'javafx-gradle-plugin', version: '8.8.2'
-	}
-
-	repositories {
-		mavenLocal()
-		mavenCentral()
-	}
-}
-
-
 plugins {
-	id 'java'
+	id 'java-library'
+	id 'application'
 	id 'eclipse'
 	id 'idea'
 }
 
-apply plugin: 'javafx-gradle-plugin'
+mainClassName = 'me.apemanzilla.edscan.EDScan'
 
 group = 'me.apemanzilla'
 version = '0.1.0'
@@ -43,30 +32,22 @@ dependencies {
 	compileOnly 'org.projectlombok:lombok:1.16.18'
 	compileOnly 'com.google.auto.service:auto-service:1.0-rc3'
 
-	compile 'me.apemanzilla:edjournal:1.1.2'
-	
-	compile 'com.google.guava:guava:23.0'
-	
-	compile 'com.google.code.gson:gson:2.8.1'
-	
-	compile 'org.controlsfx:controlsfx:8.40.13'
-	
-	compile 'com.mashape.unirest:unirest-java:1.4.9'
-	
-	compile 'net.java.dev.jna:jna:4.4.0'
-	
-	compile 'org.slf4j:slf4j-api:1.7.25'
-	compile 'org.slf4j:slf4j-simple:1.7.25'
+	api 'me.apemanzilla:edjournal:1.1.2'
+
+	implementation 'com.google.guava:guava:23.0'
+
+	implementation 'com.google.code.gson:gson:2.8.1'
+
+	implementation 'org.controlsfx:controlsfx:8.40.13'
+
+	implementation 'com.mashape.unirest:unirest-java:1.4.9'
+
+	implementation 'net.java.dev.jna:jna:4.4.0'
+
+	api 'org.slf4j:slf4j-api:1.7.25'
+	implementation 'org.slf4j:slf4j-simple:1.7.25'
 }
 
 jar {
-	manifest {
-		attributes 'Implementation-Version': version
-	}
-}
-
-jfx {
-	mainClass = 'me.apemanzilla.edscan.EDScan'
-	vendor = 'me.apemanzilla'
-	manifestAttributes = ['Implementation-Version': version]
+	manifest { attributes 'Implementation-Version': version }
 }
