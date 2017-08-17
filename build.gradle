@@ -1,0 +1,70 @@
+buildscript {
+	dependencies {
+		classpath group: 'de.dynamicfiles.projects.gradle.plugins', name: 'javafx-gradle-plugin', version: '8.8.2'
+	}
+
+	repositories {
+		mavenLocal()
+		mavenCentral()
+	}
+}
+
+
+plugins {
+	id 'java'
+	id 'eclipse'
+	id 'idea'
+}
+
+apply plugin: 'javafx-gradle-plugin'
+
+group = 'me.apemanzilla'
+version = '0.1.0'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+eclipse.project {
+	natures 'org.eclipse.buildship.core.gradleprojectnature'
+	natures 'org.springsource.ide.eclipse.gradle.core.nature'
+}
+
+tasks.withType(JavaCompile) {
+	options.fork = true
+	options.incremental = true
+}
+
+repositories {
+	mavenLocal()
+	jcenter()
+}
+
+dependencies {
+	compileOnly 'org.projectlombok:lombok:1.16.18'
+	compileOnly 'com.google.auto.service:auto-service:1.0-rc3'
+
+	compile 'me.apemanzilla:edjournal:1.1.2'
+	
+	compile 'com.google.guava:guava:23.0'
+	
+	compile 'com.google.code.gson:gson:2.8.1'
+	
+	compile 'org.controlsfx:controlsfx:8.40.13'
+	
+	compile 'com.mashape.unirest:unirest-java:1.4.9'
+	
+	compile 'org.slf4j:slf4j-api:1.7.25'
+	compile 'org.slf4j:slf4j-simple:1.7.25'
+}
+
+jar {
+	manifest {
+		attributes 'Implementation-Version': version
+	}
+}
+
+jfx {
+	mainClass = 'me.apemanzilla.edscan.EDScan'
+	vendor = 'me.apemanzilla'
+	manifestAttributes = ['Implementation-Version': version]
+}
