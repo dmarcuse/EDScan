@@ -83,7 +83,16 @@ public class EDScan extends Application {
 
 		@FXML
 		private void pluginMgr() {
+			Stage dialog = new Stage();
+			PluginView pv = new PluginView(EDScan.this);
+			dialog.setScene(new Scene(pv));
 
+			dialog.setMinWidth(650);
+			dialog.setMinHeight(250);
+			dialog.setHeight(250);
+			dialog.setTitle("Plugin Manager");
+
+			dialog.show();
 		}
 	}
 
@@ -326,6 +335,8 @@ public class EDScan extends Application {
 		primaryStage.setMinWidth(400);
 		primaryStage.setTitle("EDScan" + getVersion().map(v -> " " + v).orElse(""));
 		primaryStage.show();
+		primaryStage.toFront();
+		primaryStage.requestFocus();
 	}
 
 	@Override
