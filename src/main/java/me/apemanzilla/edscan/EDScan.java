@@ -8,19 +8,18 @@ import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Arrays;
+import java.util.Optional;
+import java.util.ServiceLoader;
 import java.util.function.Consumer;
 
 import com.google.common.collect.Multimap;
 import com.google.common.collect.MultimapBuilder;
-import com.google.gson.*;
-import com.google.gson.reflect.TypeToken;
+import com.google.gson.JsonIOException;
+import com.google.gson.JsonSyntaxException;
 
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.beans.property.Property;
-import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -33,9 +32,9 @@ import javafx.scene.control.TitledPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import me.apemanzilla.edjournal.Journal;
@@ -94,131 +93,19 @@ public class EDScan extends Application {
 
 			dialog.show();
 		}
+		
+		@FXML
+		private void about() {
+			Stage dialog = new Stage(StageStyle.UTILITY);
+			AboutView about = new AboutView();
+			dialog.setScene(new Scene(about, 200, 200));
+			dialog.setTitle("About EDScan");
+			dialog.setResizable(false);
+			dialog.show();
+		}
 	}
 
 	private EDScanController controller;
-
-	private Gson gson = new GsonBuilder().setPrettyPrinting().create();
-
-	public class Config {
-		/**
-		 * The underlying map of this config. Changes made to this map will propagate to
-		 * the config.
-		 */
-		@Getter
-		private final ConcurrentHashMap<String, JsonElement> map;
-
-		/**
-		 * Creates a new config using the mappings from the given map.
-		 */
-		public Config(Map<String, JsonElement> cfg) {
-			map = new ConcurrentHashMap<>(cfg);
-		}
-
-		/**
-		 * Creates a new, empty config.
-		 */
-		public Config() {
-			this(Collections.emptyMap());
-		}
-
-		/**
-		 * @return Whether the given key is present in the map
-		 */
-		public boolean hasKey(String key) {
-			return map.containsKey(key);
-		}
-
-		/**
-		 * Adds a key-value pair to the map
-		 */
-		public <T> void put(String key, T value) {
-			map.put(key, gson.toJsonTree(value));
-		}
-
-		/**
-		 * Removes a given key from the map
-		 */
-		public void remove(String key) {
-			map.remove(key);
-		}
-
-		/**
-		 * @return An <code>Optional</code>, empty if the given key is not present, or
-		 *         containing the value mapped to the given key.
-		 */
-		public Optional<JsonElement> get(String key) {
-			return Optional.ofNullable(map.get(key));
-		}
-
-		/**
-		 * Gets a value from the map and casts it to the given class. If the value
-		 * cannot be cast or no value is present, an empty <code>Optional</code> is
-		 * returned.
-		 */
-		public <T> Optional<T> getAs(Class<T> cls, String key) {
-			if (!map.containsKey(key)) return Optional.empty();
-			return get(key).map(e -> gson.fromJson(e, cls));
-		}
-
-		/**
-		 * Gets a value from the map and casts it to the given class. If the value
-		 * cannot be cast or no value is present, the given default value is returned
-		 * instead.
-		 */
-		public <T> T getAsOr(Class<T> cls, String key, T defaultValue) {
-			return getAs(cls, key).orElse(defaultValue);
-		}
-
-		/**
-		 * Binds the given key in this config to the given value unidirectionally, such
-		 * that when the value changes, the config is updated to match.
-		 * 
-		 * @see #bindAndSet(String, Property)
-		 * @see #bindAndSet(String, Property, Object)
-		 */
-		public <T> void bind(String key, ObservableValue<T> binding) {
-			binding.addListener((s, o, n) -> put(key, n));
-		}
-
-		/**
-		 * Sets the given property to the existing value in this config if present, then
-		 * binds it such that when the property changes, the config is updated to
-		 * match.<br>
-		 * 
-		 * @see #bind(String, ObservableValue)
-		 * @see #bindAndSet(String, Property, Object)
-		 */
-		@SuppressWarnings("unchecked")
-		public <T> void bindAndSet(String key, Property<T> binding) {
-			assert binding.getValue() != null : "Cannot determine binding type parameter";
-
-			getAs((Class<T>) binding.getValue().getClass(), key).ifPresent(binding::setValue);
-			binding.addListener((s, o, n) -> put(key, n));
-		}
-
-		/**
-		 * Sets the given property to the existing value in this config, or the given
-		 * default value, and then binds it such that when the property value changes,
-		 * the config is updated to match.<br>
-		 * <br>
-		 * When storing the new value in the config, the value will be deleted if the
-		 * new value is equal to the default value.
-		 * 
-		 * @see #bind(String, ObservableValue)
-		 * @see #bindAndSet(String, Property)
-		 */
-		@SuppressWarnings("unchecked")
-		public <T> void bindAndSet(String key, Property<T> binding, @NonNull T defaultValue) {
-			binding.setValue(getAsOr((Class<T>) defaultValue.getClass(), key, defaultValue));
-			binding.addListener((s, o, n) -> {
-				if (defaultValue.equals(n))
-					remove(key);
-				else
-					put(key, n);
-			});
-		}
-	}
 
 	@Getter
 	private Config config;
@@ -244,7 +131,7 @@ public class EDScan extends Application {
 
 	public void saveConfig() throws IOException {
 		log.info("Writing config");
-		Files.write(getConfigFile(), gson.toJson(config.getMap()).getBytes());
+		config.save(getConfigFile());
 	}
 
 	public <T extends JournalEvent> void addEventListener(Class<T> cls, Consumer<T> consumer) {
@@ -298,7 +185,7 @@ public class EDScan extends Application {
 		log.info("Loading config");
 		if (Files.exists(getConfigFile())) {
 			try (Reader r = Files.newBufferedReader(getConfigFile())) {
-				config = new Config(gson.fromJson(r, new TypeToken<Map<String, JsonElement>>() {}.getType()));
+				config = Config.load(getConfigFile());
 			} catch (JsonIOException | JsonSyntaxException | IOException e) {
 				log.error("Error loading config from {}", getConfigFile(), e);
 				config = new Config();

@@ -20,6 +20,7 @@
                         <KeyCodeCombination alt="UP" code="P" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
                      </accelerator>
                   </MenuItem>
+                  <MenuItem mnemonicParsing="false" onAction="#about" text="About" />
                   <SeparatorMenuItem mnemonicParsing="false" />
                   <MenuItem mnemonicParsing="false" onAction="#quit" text="Quit">
                      <accelerator>
