@@ -2,8 +2,6 @@ package me.apemanzilla.edscan.plugins;
 
 import static java.lang.Math.pow;
 
-import java.util.function.Consumer;
-
 import com.google.auto.service.AutoService;
 
 import javafx.application.Platform;
@@ -13,7 +11,7 @@ import me.apemanzilla.edjournal.events.Scan.StarScan;
 import me.apemanzilla.edscan.Plugin;
 
 @AutoService(Plugin.class)
-public class HabitableZone extends Plugin implements Consumer<StarScan> {
+public class HabitableZone extends Plugin {
 	@Override
 	public String getName() {
 		return "Habitable Zone Finder";
@@ -45,19 +43,10 @@ public class HabitableZone extends Plugin implements Consumer<StarScan> {
 		});
 	}
 
-	public void accept(StarScan scan) {
-		updateLabels(scan);
-	}
-
 	@Override
 	public void init() {
 		edscan.addView("Estimated Habitable Zone", new VBox(starName, starHabZone));
-		edscan.getJournal().lastEventOfType(StarScan.class).ifPresent(this);
-		edscan.addEventListener(StarScan.class, this);
-	}
-
-	@Override
-	public void cleanup() {
-		edscan.removeEventListener(this);
+		edscan.getJournal().lastEventOfType(StarScan.class).ifPresent(this::updateLabels);
+		edscan.addEventListener(StarScan.class, this::updateLabels);
 	}
 }

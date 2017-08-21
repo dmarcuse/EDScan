@@ -88,7 +88,7 @@ public class EDSMSync extends Plugin {
 		private ToggleSwitch submitSwitch;
 
 		@FXML
-		private Label totalSubmitted, totalDiscovered;
+		private Label totalSubmitted;
 
 		private final Object submitLock = new Object();
 
@@ -147,14 +147,11 @@ public class EDSMSync extends Plugin {
 								if (o.has("systemCreated") && o.get("systemCreated").getAsBoolean()) discovered++;
 
 								edscan.getConfig().put("edsm.totalSubmitted", submitted.toString());
-								edscan.getConfig().put("edsm.totalDiscovered", discovered.toString());
 
 								final Integer s = submitted;
-								final Integer d = discovered;
 
 								Platform.runLater(() -> {
 									totalSubmitted.setText(s.toString());
-									totalDiscovered.setText(d.toString());
 								});
 
 							}
@@ -193,7 +190,6 @@ public class EDSMSync extends Plugin {
 			edscan.addEventListener(FSDJump.class, this);
 
 			totalSubmitted.setText(edscan.getConfig().getAsOr(Integer.class, "edsm.totalSubmitted", 0).toString());
-			totalDiscovered.setText(edscan.getConfig().getAsOr(Integer.class, "edsm.totalDiscovered", 0).toString());
 
 			Timer t = new Timer("EDSM Submitter", true);
 			t.scheduleAtFixedRate(submitter, 2000, 5 * 60 * 1000);

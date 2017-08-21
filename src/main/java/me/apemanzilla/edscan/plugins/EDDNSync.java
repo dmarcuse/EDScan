@@ -3,8 +3,6 @@ package me.apemanzilla.edscan.plugins;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
 import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.BlockingQueue;
@@ -65,12 +63,19 @@ public class EDDNSync extends Plugin {
 
 	private BlockingQueue<JsonObject> journalMessageQueue = new LinkedBlockingQueue<>();
 
-	private String commanderName;
+	private String getAnonymousUUID() {
+		if (!edscan.getConfig().hasKey("eddn.anonymousUUID")) {
+			edscan.getConfig().put("eddn.anonymousUUID", UUID.randomUUID().toString());
+			try {
+				edscan.saveConfig();
+			} catch (IOException e) {
+				log.error("Exception saving config", e);
 
-	private MessageDigest sha256;
+				edscan.showErrorMessage("Config saving error", "There was an error saving the config.", e);
+			}
+		}
 
-	private UUID getAnonymousUUID() {
-		return UUID.nameUUIDFromBytes(sha256.digest(commanderName.getBytes(StandardCharsets.UTF_8)));
+		return edscan.getConfig().getAs(String.class, "eddn.anonymousUUID").get();
 	}
 
 	@Override
@@ -102,10 +107,8 @@ public class EDDNSync extends Plugin {
 
 	@Override
 	public void init() throws Exception {
-		commanderName = edscan.getJournal().lastEventOfType(LoadGame.class).map(LoadGame::getCommander)
+		String commanderName = edscan.getJournal().lastEventOfType(LoadGame.class).map(LoadGame::getCommander)
 				.orElse("Unknown");
-
-		sha256 = MessageDigest.getInstance("SHA-256");
 
 		edscan.addView("EDDN Sync", new EDDNSyncController());
 
