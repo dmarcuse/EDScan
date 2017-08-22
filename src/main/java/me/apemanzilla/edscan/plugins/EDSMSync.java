@@ -8,6 +8,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.*;
+import java.util.concurrent.Callable;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -25,6 +26,7 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
@@ -71,10 +73,10 @@ public class EDSMSync extends Plugin {
 	public String getDescription() {
 		return "Submits flight logs and system positions to EDSM";
 	}
-
+	
 	@Override
-	public void init() throws Exception {
-		edscan.addView("EDSM Sync", new EDSMSyncController());
+	public Optional<Callable<Node>> getViewBuilder() {
+		return Optional.of(EDSMSyncController::new);
 	}
 
 	public class EDSMSyncController extends VBox implements Initializable, Consumer<FSDJump> {

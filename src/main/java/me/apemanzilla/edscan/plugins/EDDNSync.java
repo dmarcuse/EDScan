@@ -6,6 +6,7 @@ import java.net.URL;
 import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Callable;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import org.controlsfx.control.ToggleSwitch;
@@ -20,6 +21,7 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
@@ -110,8 +112,6 @@ public class EDDNSync extends Plugin {
 		String commanderName = edscan.getJournal().lastEventOfType(LoadGame.class).map(LoadGame::getCommander)
 				.orElse("Unknown");
 
-		edscan.addView("EDDN Sync", new EDDNSyncController());
-
 		Optional<FSDJump> lastJump = edscan.getJournal().lastEventOfType(FSDJump.class);
 		if (lastJump.isPresent()) {
 			lastSystem = lastJump.get().getStarSystem();
@@ -169,6 +169,11 @@ public class EDDNSync extends Plugin {
 		submitter.setName("EDDN Submitter");
 
 		submitter.start();
+	}
+	
+	@Override
+	public Optional<Callable<Node>> getViewBuilder() {
+		return Optional.of(EDDNSyncController::new);
 	}
 
 	public class EDDNSyncController extends GridPane implements Initializable {

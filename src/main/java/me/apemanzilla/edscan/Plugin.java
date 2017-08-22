@@ -2,6 +2,9 @@ package me.apemanzilla.edscan;
 
 import java.security.CodeSource;
 import java.util.Optional;
+import java.util.concurrent.Callable;
+
+import javafx.scene.Node;
 
 public abstract class Plugin {
 	protected EDScan edscan;
@@ -29,6 +32,15 @@ public abstract class Plugin {
 	 */
 	public void init() throws Exception {
 
+	}
+
+	/**
+	 * Gets the view builder for this plugin. This will be invoked after
+	 * {@link #init()}.<br>
+	 * The default implementation returns an empty optional.
+	 */
+	public Optional<Callable<Node>> getViewBuilder() {
+		return Optional.empty();
 	}
 
 	/**

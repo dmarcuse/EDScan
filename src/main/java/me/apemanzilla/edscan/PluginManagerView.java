@@ -18,7 +18,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Text;
 import lombok.SneakyThrows;
 
-public class PluginView extends BorderPane implements Initializable {
+public class PluginManagerView extends BorderPane implements Initializable {
 	private final EDScan edscan;
 
 	@FXML
@@ -31,10 +31,10 @@ public class PluginView extends BorderPane implements Initializable {
 	private TableColumn<Plugin, String> pluginColumn, descriptionColumn;
 
 	@SneakyThrows(IOException.class)
-	public PluginView(EDScan edscan) {
+	public PluginManagerView(EDScan edscan) {
 		this.edscan = edscan;
 
-		FXMLLoader loader = new FXMLLoader(PluginView.class.getResource("PluginView.fxml"));
+		FXMLLoader loader = new FXMLLoader(PluginManagerView.class.getResource("PluginManagerView.fxml"));
 
 		loader.setController(this);
 		loader.setRoot(this);

@@ -4,6 +4,7 @@ import java.security.CodeSource;
 import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Stream;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -38,34 +39,40 @@ public class PluginManager {
 		return edscan.getConfig().getAsOr(Boolean.class, key, true);
 	}
 
-	public void init() {
-		plugins.forEach(p -> {
-			if (isEnabled(p)) {
-				try {
-					p.init();
-				} catch (Exception e) {
-					log.error("Error initializing plugin {}:", p, e);
+	Stream<Plugin> enabledPlugins() {
+		return plugins.stream().filter(this::isEnabled);
+	}
 
-					edscan.showErrorMessage("Plugin error", "There was an error initializing plugin " + p, e);
-				}
-			} else {
-				log.info("Skipping init for disabled plugin [{}]", p);
+	public void init() {
+		enabledPlugins().forEach(p -> {
+			try {
+				p.init();
+			} catch (Exception e) {
+				log.error("Error calling init for [{}]", p, e);
+				edscan.showErrorMessage("Plugin initialization error", "There was an error initializing plugin " + p,
+						e);
+			}
+		});
+	}
+
+	public void addViews() {
+		enabledPlugins().filter(p -> p.getViewBuilder().isPresent()).forEach(p -> {
+			try {
+				edscan.addView(p.toString(), p.getViewBuilder().get().call());
+			} catch (Exception e) {
+				log.error("Error creating view for [{}]", p, e);
+				edscan.showErrorMessage("Plugin view error", "There was an error creating the view for plugin " + p, e);
 			}
 		});
 	}
 
 	public void cleanup() {
-		plugins.forEach(p -> {
-			if (isEnabled(p)) {
-				try {
-					p.cleanup();
-				} catch (Exception e) {
-					log.error("Error cleaning up plugin {}:", p, e);
-
-					edscan.showErrorMessage("Plugin error", "There was an error cleaning up plugin " + p, e);
-				}
-			} else {
-				log.info("Skipping cleanup for disabled plugin [{}]", p);
+		enabledPlugins().forEach(p -> {
+			try {
+				p.cleanup();
+			} catch (Exception e) {
+				log.error("Error calling cleanup for [{}]", p, e);
+				edscan.showErrorMessage("Plugin cleanup error", "There was an error cleaning up plugin " + p, e);
 			}
 		});
 	}

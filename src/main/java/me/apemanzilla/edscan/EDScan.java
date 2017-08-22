@@ -84,7 +84,7 @@ public class EDScan extends Application {
 		@FXML
 		private void pluginMgr() {
 			Stage dialog = new Stage();
-			PluginView pv = new PluginView(EDScan.this);
+			PluginManagerView pv = new PluginManagerView(EDScan.this);
 			dialog.setScene(new Scene(pv));
 
 			dialog.setMinWidth(650);
@@ -186,7 +186,7 @@ public class EDScan extends Application {
 		});
 	}
 
-	public void addView(String name, Node content) {
+	void addView(String name, Node content) {
 		TitledPane pane = new TitledPane(name, content);
 		List<Node> children = controller.viewPane.getChildren();
 
@@ -239,7 +239,8 @@ public class EDScan extends Application {
 		controller = new EDScanController();
 
 		pluginManager.init();
-
+		pluginManager.addViews();
+		
 		Scene scene = new Scene(controller);
 
 		primaryStage.setScene(scene);

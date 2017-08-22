@@ -2,9 +2,13 @@ package me.apemanzilla.edscan.plugins;
 
 import static java.lang.Math.pow;
 
+import java.util.Optional;
+import java.util.concurrent.Callable;
+
 import com.google.auto.service.AutoService;
 
 import javafx.application.Platform;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import me.apemanzilla.edjournal.events.Scan.StarScan;
@@ -45,8 +49,12 @@ public class HabitableZone extends Plugin {
 
 	@Override
 	public void init() {
-		edscan.addView("Estimated Habitable Zone", new VBox(starName, starHabZone));
 		edscan.getJournal().lastEventOfType(StarScan.class).ifPresent(this::updateLabels);
 		edscan.addEventListener(StarScan.class, this::updateLabels);
+	}
+	
+	@Override
+	public Optional<Callable<Node>> getViewBuilder() {
+		return Optional.ofNullable(() -> new VBox(starName, starHabZone));
 	}
 }

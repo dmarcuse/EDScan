@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
 import java.util.*;
+import java.util.concurrent.Callable;
 import java.util.function.Consumer;
 
 import org.controlsfx.control.textfield.AutoCompletionBinding.ISuggestionRequest;
@@ -24,6 +25,7 @@ import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.input.Clipboard;
@@ -89,8 +91,11 @@ public class NeutronHighway extends Plugin {
 			switchToRoute(route.get());
 		else
 			switchToForm();
+	}
 
-		edscan.addView("Neutron Highway", viewWrapper);
+	@Override
+	public Optional<Callable<Node>> getViewBuilder() {
+		return Optional.of(() -> viewWrapper);
 	}
 
 	public class FormController extends GridPane implements Initializable {
