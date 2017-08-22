@@ -358,7 +358,7 @@ public class NeutronHighway extends Plugin {
 		private void updateProgress() {
 			nextLabel.setText(route.getNextJump().map(Jump::getSystem).orElse("Done!"));
 
-			progress.setProgress(route.getProgress() / (route.getSystemJumps().size() - 1.0));
+			progress.setProgress((double) route.completedJumps() / route.totalJumps());
 			progressLabel.setText(String.format("%d / %d jumps (%.1f ly remaining)", route.completedJumps(),
 					route.totalJumps(), route.getCurrentJump().map(Jump::getDistanceLeft).get()));
 
