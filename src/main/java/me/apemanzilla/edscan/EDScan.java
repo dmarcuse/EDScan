@@ -9,6 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.ServiceLoader;
 import java.util.function.Consumer;
@@ -93,7 +94,7 @@ public class EDScan extends Application {
 
 			dialog.show();
 		}
-		
+
 		@FXML
 		private void about() {
 			Stage dialog = new Stage(StageStyle.UTILITY);
@@ -177,7 +178,19 @@ public class EDScan extends Application {
 
 	public void addView(String name, Node content) {
 		TitledPane pane = new TitledPane(name, content);
-		controller.viewPane.getChildren().add(pane);
+		List<Node> children = controller.viewPane.getChildren();
+		
+		int i;
+		
+		for (i = 0; i < children.size(); i++) {
+			Node n = children.get(i);
+			
+			if (n instanceof TitledPane) {
+				if (name.compareToIgnoreCase(((TitledPane) n).getText()) < 0) break;
+			}
+		}
+		
+		children.add(i, pane);
 	}
 
 	@Override
