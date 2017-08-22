@@ -92,6 +92,8 @@ public class EDScan extends Application {
 			dialog.setHeight(250);
 			dialog.setTitle("Plugin Manager");
 
+			dialog.initOwner(primaryStage);
+			
 			dialog.show();
 		}
 
@@ -99,14 +101,20 @@ public class EDScan extends Application {
 		private void about() {
 			Stage dialog = new Stage(StageStyle.UTILITY);
 			AboutView about = new AboutView();
+			
 			dialog.setScene(new Scene(about, 200, 200));
 			dialog.setTitle("About EDScan");
 			dialog.setResizable(false);
+			
+			dialog.initOwner(primaryStage);
+			
 			dialog.show();
 		}
 	}
 
 	private EDScanController controller;
+
+	private Stage primaryStage;
 
 	@Getter
 	private Config config;
@@ -172,6 +180,8 @@ public class EDScan extends Application {
 			VBox content = new VBox(new Label("Complete stack trace:"), textArea);
 			alert.getDialogPane().setExpandableContent(content);
 
+			alert.initOwner(primaryStage);
+			
 			alert.showAndWait();
 		});
 	}
@@ -179,17 +189,17 @@ public class EDScan extends Application {
 	public void addView(String name, Node content) {
 		TitledPane pane = new TitledPane(name, content);
 		List<Node> children = controller.viewPane.getChildren();
-		
+
 		int i;
-		
+
 		for (i = 0; i < children.size(); i++) {
 			Node n = children.get(i);
-			
+
 			if (n instanceof TitledPane) {
 				if (name.compareToIgnoreCase(((TitledPane) n).getText()) < 0) break;
 			}
 		}
-		
+
 		children.add(i, pane);
 	}
 
@@ -230,13 +240,29 @@ public class EDScan extends Application {
 
 		pluginManager.init();
 
-		primaryStage.setScene(new Scene(controller));
+		Scene scene = new Scene(controller);
+
+		primaryStage.setScene(scene);
+
 		primaryStage.setMinHeight(300);
 		primaryStage.setMinWidth(400);
+
+		config.bind("edscan.height", primaryStage.heightProperty());
+		config.bind("edscan.width", primaryStage.widthProperty());
+		config.bind("edscan.x", primaryStage.xProperty());
+		config.bind("edscan.y", primaryStage.yProperty());
+
+		config.getAs(Double.class, "edscan.height").ifPresent(primaryStage::setHeight);
+		config.getAs(Double.class, "edscan.width").ifPresent(primaryStage::setWidth);
+		config.getAs(Double.class, "edscan.x").ifPresent(primaryStage::setX);
+		config.getAs(Double.class, "edscan.y").ifPresent(primaryStage::setY);
+
 		primaryStage.setTitle("EDScan" + getVersion().map(v -> " " + v).orElse(""));
 		primaryStage.show();
 		primaryStage.toFront();
 		primaryStage.requestFocus();
+
+		this.primaryStage = primaryStage;
 	}
 
 	@Override
