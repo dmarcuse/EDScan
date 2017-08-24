@@ -60,7 +60,7 @@
         </rowConstraints>
          <children>
             <Label text="Total flight logs submitted" />
-            <Label fx:id="totalSubmitted" text="0" GridPane.columnIndex="1" />
+            <Label fx:id="totalSubmitted" styleClass="number" text="0" GridPane.columnIndex="1" />
          </children>
          <padding>
             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />

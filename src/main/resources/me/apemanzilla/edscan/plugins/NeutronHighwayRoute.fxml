@@ -8,6 +8,7 @@
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.text.TextFlow?>
 
 <fx:root hgap="2.0" type="GridPane" vgap="2.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
    <rowConstraints>
@@ -18,12 +19,12 @@
       <RowConstraints minHeight="10.0" prefHeight="30.0" />
    </rowConstraints>
    <columnConstraints>
-      <ColumnConstraints maxWidth="1.7976931348623157E308" />
+      <ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" />
       <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="100.0" />
-      <ColumnConstraints maxWidth="1.7976931348623157E308" minWidth="10.0" />
+      <ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" minWidth="10.0" />
    </columnConstraints>
    <children>
-      <Label text="Next System" />
+      <Label text="Next" />
       <Label fx:id="nextLabel" minWidth="100.0" text="Label" GridPane.columnIndex="1" />
       <Button fx:id="copyBtn" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#copyNextSystem" text="Copy" GridPane.columnIndex="2" />
       <Label text="Destination" GridPane.rowIndex="1" />
@@ -38,11 +39,20 @@
             <ColumnConstraints hgrow="NEVER" minWidth="10.0" />
          </columnConstraints>
          <rowConstraints>
-            <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+            <RowConstraints fillHeight="false" minHeight="10.0" vgrow="SOMETIMES" />
          </rowConstraints>
          <children>
             <Button fx:id="prevBtn" mnemonicParsing="false" onAction="#previousJump" text="Prev." />
-            <Label fx:id="progressLabel" text="Label" GridPane.columnIndex="1" GridPane.halignment="CENTER" />
+            <TextFlow textAlignment="CENTER" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+               <children>
+                  <Label fx:id="currentJumpLabel" styleClass="number" text="0" />
+                  <Label text=" / " />
+                  <Label fx:id="totalJumpsLabel" styleClass="number" text="1" />
+                  <Label text=" jumps (" />
+                  <Label fx:id="distanceRemainingLabel" styleClass="number" text="0" />
+                  <Label text="ly left)" />
+               </children>
+            </TextFlow>
             <Button fx:id="skipBtn" mnemonicParsing="false" onAction="#skipJump" text="Next" GridPane.columnIndex="2" />
          </children>
       </GridPane>

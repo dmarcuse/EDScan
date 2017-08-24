@@ -1,0 +1,176 @@
+@font-face {
+	src: url('../fonts/EuroCaps.ttf');
+}
+
+@font-face {
+	src: url('../fonts/Sintony.ttf');
+}
+
+@font-face {
+	src: url('../fonts/Telegrama.otf');
+}
+
+* {
+	-ed-white: #ffffff;
+	-ed-black: #000000;
+	-ed-gray: gray;
+	-ed-blue: #00b3f7;
+	-ed-green: #029e4c;
+	-ed-horizons-blue: #0a8bd6;
+	-ed-red: #ff0000;
+	-ed-orange: #ff7100;
+	-ed-muted-orange: #f8ae3f;
+	-ed-yellow: #ffb000;
+	-ed-dark-orange: derive(-ed-orange, -90%);
+	
+}
+
+.root {
+	-fx-focus-color: transparent;
+	-fx-faint-focus-color: transparent;
+}
+
+/* Misc */
+.text {
+	-fx-font-family: Sintony;
+}
+
+.label {
+	-fx-text-fill: -ed-orange;
+}
+
+.number * {
+	-fx-font-family: Telegrama;
+}
+
+/* TitledPane */
+.titled-pane {
+	-fx-text-fill: -ed-orange;
+}
+
+.titled-pane > .title {
+	-fx-background-color: -ed-black;
+	-fx-border-color: -ed-orange transparent -ed-dark-orange transparent;
+	-fx-border-radius: 0;
+	-fx-border-width: 0.1em;
+}
+
+.titled-pane > .title * {
+	-fx-font-family: 'Euro Caps';
+	-fx-font-size: 1.33em;
+}
+
+.titled-pane > .content {
+	-fx-background-color: -ed-black;
+	-fx-border-color: transparent;
+	-fx-border-radius: 0;
+	-fx-border-width: 0;
+}
+
+/* CheckBox */
+.check-box {
+	-fx-background-color: -ed-black;
+	-fx-text-fill: -ed-orange;
+}
+
+.check-box > .box {
+	-fx-background-insets: 0;
+	-fx-shape: "M 0,0 V 9 H 3 V 3 h 19 v 6 h 3 V 0 Z m 0,16 v 9 h 25 v -9 h -3 v 6 H 3 v -6 z";
+}
+
+.check-box:focused > .box {
+	-fx-background-insets: 0;
+}
+
+.check-box > .box > .mark {
+	-fx-shape: "M 6,6 V 19 H 19 V 6 Z";
+	-fx-scale-shape: false;
+	-fx-padding: 0.5em;
+	-fx-scale-x: 0.5;
+	-fx-scale-y: 0.5;
+}
+
+.check-box:selected > .box > .mark {
+	-fx-background-color: -ed-muted-orange;
+}
+
+/* TextField */
+.text-field {
+	-fx-font-family: Sintony;
+	-fx-text-fill: -ed-orange;
+	-fx-background-color: -ed-dark-orange;
+	-fx-background-radius: 0;
+	-fx-border-width: 0.1em;
+	-fx-border-radius: 0px;
+	-fx-border-color: transparent;
+	-fx-border-insets: 0.4em;
+	-fx-background-insets: 0.4em;
+	-fx-padding: 0.4em;
+}
+
+.text-field:hover {
+	-fx-border-color: -ed-orange;
+}
+
+.text-field:focused {
+	-fx-border-color: -ed-yellow;
+}
+
+/* Button */
+.button {
+	-fx-background-color: -ed-dark-orange;
+	-fx-background-radius: 0;
+	-fx-border-width: 0;
+	-fx-text-fill: -ed-orange;
+}
+
+.button:hover {
+	-fx-background-color: -ed-orange;
+	-fx-text-fill: -ed-black;
+}
+
+.button:armed {
+	-fx-background-color: -ed-yellow;
+	-fx-text-fill: -ed-black;
+}
+
+/* ProgressBar */
+.progress-bar {
+	-fx-border: none;
+}
+
+.progress-bar > .track {
+	-fx-background-color: -ed-dark-orange;
+	-fx-background-radius: 0;
+}
+
+.progress-bar > .bar {
+	-fx-background-color: -ed-orange;
+	-fx-background-insets: 0;
+	-fx-background-radius: 0;
+	-fx-padding: 0.5em;
+}
+
+/* Separator */
+.separator .line {
+	-fx-border-color: -ed-orange transparent transparent transparent;
+}
+
+/* Slider */
+.slider .track {
+	-fx-background-color: -ed-dark-orange;
+}
+
+.slider .thumb {
+	-fx-background-color: -ed-orange;
+}
+
+.slider:hover .thumb {
+	-fx-background-color: -ed-yellow;
+}
+
+.slider .axis .axis-tick-mark,
+.slider .axis .axis-minor-tick-mark {
+	-fx-fill: null;
+	-fx-stroke: -ed-orange;
+}

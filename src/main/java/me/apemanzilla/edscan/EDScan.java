@@ -8,10 +8,7 @@ import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.ServiceLoader;
+import java.util.*;
 import java.util.function.Consumer;
 
 import com.google.common.collect.Multimap;
@@ -23,6 +20,7 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -62,7 +60,7 @@ public class EDScan extends Application {
 	private Multimap<Class<?>, Consumer<? extends JournalEvent>> listeners = MultimapBuilder.hashKeys().hashSetValues()
 			.build();
 
-	public class EDScanController extends BorderPane {
+	public class EDScanController extends BorderPane implements Initializable {
 		@SneakyThrows(IOException.class)
 		private EDScanController() {
 			FXMLLoader loader = new FXMLLoader(EDScan.class.getResource("EDScan.fxml"));
@@ -71,6 +69,11 @@ public class EDScan extends Application {
 			loader.setRoot(this);
 
 			loader.load();
+		}
+
+		@Override
+		public void initialize(URL location, ResourceBundle resources) {
+			getStyleClass().add("edscan");
 		}
 
 		@FXML
@@ -93,7 +96,7 @@ public class EDScan extends Application {
 			dialog.setTitle("Plugin Manager");
 
 			dialog.initOwner(primaryStage);
-			
+
 			dialog.show();
 		}
 
@@ -101,13 +104,13 @@ public class EDScan extends Application {
 		private void about() {
 			Stage dialog = new Stage(StageStyle.UTILITY);
 			AboutView about = new AboutView();
-			
+
 			dialog.setScene(new Scene(about, 200, 200));
 			dialog.setTitle("About EDScan");
 			dialog.setResizable(false);
-			
+
 			dialog.initOwner(primaryStage);
-			
+
 			dialog.show();
 		}
 	}
@@ -181,13 +184,14 @@ public class EDScan extends Application {
 			alert.getDialogPane().setExpandableContent(content);
 
 			alert.initOwner(primaryStage);
-			
+
 			alert.showAndWait();
 		});
 	}
 
 	void addView(String name, Node content) {
 		TitledPane pane = new TitledPane(name, content);
+		pane.getStyleClass().add("plugin-view-wrapper");
 		List<Node> children = controller.viewPane.getChildren();
 
 		int i;
@@ -240,8 +244,9 @@ public class EDScan extends Application {
 
 		pluginManager.init();
 		pluginManager.addViews();
-		
+
 		Scene scene = new Scene(controller);
+		scene.getStylesheets().add(EDScan.class.getResource("themes/Elite.css").toExternalForm());
 
 		primaryStage.setScene(scene);
 

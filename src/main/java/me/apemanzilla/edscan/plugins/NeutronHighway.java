@@ -307,7 +307,7 @@ public class NeutronHighway extends Plugin {
 		private Button clearBtn, copyBtn, skipBtn, prevBtn;
 
 		@FXML
-		private Label nextLabel, destLabel, progressLabel;
+		private Label nextLabel, destLabel, currentJumpLabel, totalJumpsLabel, distanceRemainingLabel;
 
 		@FXML
 		private ProgressBar progress;
@@ -364,8 +364,14 @@ public class NeutronHighway extends Plugin {
 			nextLabel.setText(route.getNextJump().map(Jump::getSystem).orElse("Done!"));
 
 			progress.setProgress((double) route.completedJumps() / route.totalJumps());
-			progressLabel.setText(String.format("%d / %d jumps (%.1f ly remaining)", route.completedJumps(),
-					route.totalJumps(), route.getCurrentJump().map(Jump::getDistanceLeft).get()));
+			// progressLabel.setText(String.format("%d / %d jumps (%.1f ly remaining)",
+			// route.completedJumps(),
+			// route.totalJumps(),
+			// route.getCurrentJump().map(Jump::getDistanceLeft).get()));
+			currentJumpLabel.setText("" + route.completedJumps());
+			totalJumpsLabel.setText("" + route.totalJumps());
+			distanceRemainingLabel
+					.setText(String.format("%.1f", route.getCurrentJump().map(Jump::getDistanceLeft).orElse(0.0)));
 
 			if (autoCopy.isSelected()) copyNextSystem();
 		}
