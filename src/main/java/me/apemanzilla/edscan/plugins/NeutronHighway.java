@@ -103,7 +103,7 @@ public class NeutronHighway extends Plugin {
 		private GridPane root;
 
 		@FXML
-		private Button hereBtn, submitBtn;
+		private Button submitBtn;
 
 		@FXML
 		private TextField fromField, toField;
@@ -150,12 +150,10 @@ public class NeutronHighway extends Plugin {
 
 			TextFields.bindAutoCompletion(fromField, this::completeSystemName);
 			TextFields.bindAutoCompletion(toField, this::completeSystemName);
-		}
 
-		@FXML
-		private void setCurrentLocation() {
 			edscan.getJournal().lastEventOfType(FSDJump.class).map(FSDJump::getStarSystem)
-					.ifPresent(fromField::setText);
+					.ifPresent(fromField::setPromptText);
+			edscan.addEventListener(FSDJump.class, j -> fromField.setPromptText(j.getStarSystem()));
 		}
 
 		@FXML
@@ -163,7 +161,9 @@ public class NeutronHighway extends Plugin {
 			setDisable(true);
 
 			final Map<String, Object> params = new HashMap<>();
-			params.put("from", fromField.getText().trim());
+			params.put("from", fromField.getText().trim().isEmpty() ? fromField.getPromptText().trim()
+					: fromField.getText().trim());
+			
 			params.put("to", toField.getText().trim());
 			params.put("range", rangeSlider.getValue());
 			params.put("efficiency", effSlider.getValue());

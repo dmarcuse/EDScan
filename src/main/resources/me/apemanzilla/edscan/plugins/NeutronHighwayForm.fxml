@@ -27,8 +27,7 @@
 	</columnConstraints>
 	<children>
 		<Label text="From" />
-		<Button fx:id="hereBtn" maxHeight="1.7976931348623157E308" mnemonicParsing="false" onAction="#setCurrentLocation" text="Here" GridPane.columnIndex="3" />
-		<TextField fx:id="fromField" promptText="Starting System" GridPane.columnIndex="2" />
+		<TextField fx:id="fromField" GridPane.columnIndex="2" GridPane.columnSpan="2147483647" />
 		<Label text="To" GridPane.rowIndex="1" />
 		<TextField fx:id="toField" promptText="Destination" GridPane.columnIndex="2" GridPane.columnSpan="2147483647" GridPane.rowIndex="1" />
 		<Label text="Jump Range" GridPane.rowIndex="2" />

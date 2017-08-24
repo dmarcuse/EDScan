@@ -103,9 +103,6 @@
 	-fx-border-width: 0.1em;
 	-fx-border-radius: 0px;
 	-fx-border-color: transparent;
-	-fx-border-insets: 0.4em;
-	-fx-background-insets: 0.4em;
-	-fx-padding: 0.4em;
 }
 
 .text-field:hover {
