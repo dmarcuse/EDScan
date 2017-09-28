@@ -73,7 +73,7 @@ public class EDSMSync extends Plugin {
 	public String getDescription() {
 		return "Submits flight logs and system positions to EDSM";
 	}
-	
+
 	@Override
 	public Optional<Callable<Node>> getViewBuilder() {
 		return Optional.of(EDSMSyncController::new);

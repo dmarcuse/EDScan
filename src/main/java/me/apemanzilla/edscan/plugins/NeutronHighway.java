@@ -163,7 +163,7 @@ public class NeutronHighway extends Plugin {
 			final Map<String, Object> params = new HashMap<>();
 			params.put("from", fromField.getText().trim().isEmpty() ? fromField.getPromptText().trim()
 					: fromField.getText().trim());
-			
+
 			params.put("to", toField.getText().trim());
 			params.put("range", rangeSlider.getValue());
 			params.put("efficiency", effSlider.getValue());

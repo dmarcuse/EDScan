@@ -170,7 +170,7 @@ public class EDDNSync extends Plugin {
 
 		submitter.start();
 	}
-	
+
 	@Override
 	public Optional<Callable<Node>> getViewBuilder() {
 		return Optional.of(EDDNSyncController::new);
