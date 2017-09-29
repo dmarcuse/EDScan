@@ -11,6 +11,7 @@ import java.util.function.Consumer;
 
 import com.google.auto.service.AutoService;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -70,13 +71,15 @@ public class HabitableZone extends Plugin {
 
 		@Override
 		public void accept(StarScan scan) {
-			system.setText(String.format("%s (Class %s)", scan.getBodyName(), scan.getStarType()));
+			Platform.runLater(() -> {
+				system.setText(String.format("%s (Class %s)", scan.getBodyName(), scan.getStarType()));
 
-			double habInner = distForBlackBodyTemp(scan.getRadius(), scan.getSurfaceTemperature(), 315);
-			double habOuter = distForBlackBodyTemp(scan.getRadius(), scan.getSurfaceTemperature(), 223);
+				double habInner = distForBlackBodyTemp(scan.getRadius(), scan.getSurfaceTemperature(), 315);
+				double habOuter = distForBlackBodyTemp(scan.getRadius(), scan.getSurfaceTemperature(), 223);
 
-			habZoneInner.setText(String.format("%.2f", habInner));
-			habZoneOuter.setText(String.format("%.2f", habOuter));
+				habZoneInner.setText(String.format("%.2f", habInner));
+				habZoneOuter.setText(String.format("%.2f", habOuter));
+			});
 		}
 	}
 }
