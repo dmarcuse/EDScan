@@ -33,7 +33,7 @@ dependencies {
 	compileOnly 'org.projectlombok:lombok:1.16.18'
 	compileOnly 'com.google.auto.service:auto-service:1.0-rc3'
 
-	api 'me.apemanzilla:edjournal:1.2.0-beta'
+	api 'me.apemanzilla:edjournal:1.2.0-beta2'
 
 	api 'com.google.guava:guava:23.0'
 
